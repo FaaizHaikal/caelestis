@@ -80,6 +80,28 @@ class GeneralBattery : public ConfigObject {
             }),
         })
     CONFIG_GLOBAL_PROPERTY(int, criticalLevel, 3)
+    CONFIG_GLOBAL_PROPERTY(QVariantList, chargeWarnLevels,
+        {
+            vmap({
+                { u"level"_s, 80 },
+                { u"title"_s, u"Battery nearly full"_s },
+                { u"message"_s, u"Unplug your charger to save battery health"_s },
+                { u"icon"_s, u"battery_charging_80"_s },
+            }),
+            vmap({
+                { u"level"_s, 90 },
+                { u"title"_s, u"Did you see the previous message?"_s },
+                { u"message"_s, u"You should probably unplug your charger <b>now</b>"_s },
+                { u"icon"_s, u"battery_charging_90"_s },
+            }),
+            vmap({
+                { u"level"_s, 100 },
+                { u"title"_s, u"Battery fully charged"_s },
+                { u"message"_s, u"UNPLUG THE CHARGER RIGHT NOW!!"_s },
+                { u"icon"_s, u"battery_charging_full"_s },
+                { u"critical"_s, true },
+            }),
+        })
 
 public:
     explicit GeneralBattery(QObject* parent = nullptr)

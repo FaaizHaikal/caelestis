@@ -9,12 +9,15 @@ Scope {
     id: root
 
     readonly property list<var> warnLevels: [...GlobalConfig.general.battery.warnLevels].sort((a, b) => b.level - a.level)
+    readonly property list<var> chargeWarnLevels: [...GlobalConfig.general.battery.chargeWarnLevels].sort((a, b) => b.level - a.level)
 
     Connections {
         function onOnBatteryChanged(): void {
             if (UPower.onBattery) {
                 if (GlobalConfig.utilities.toasts.chargingChanged)
                     Toaster.toast(qsTr("Charger unplugged"), qsTr("Battery is discharging"), "power_off");
+                for (const level of root.chargeWarnLevels)
+                    level.warned = false;
             } else {
                 if (GlobalConfig.utilities.toasts.chargingChanged)
                     Toaster.toast(qsTr("Charger plugged in"), qsTr("Battery is charging"), "power");
@@ -28,10 +31,20 @@ Scope {
 
     Connections {
         function onPercentageChanged(): void {
-            if (!UPower.onBattery)
-                return;
-
             const p = UPower.displayDevice.percentage * 100;
+
+            // Display battery charging warn levels
+            if (!UPower.onBattery) {
+                for (const level of root.chargeWarnLevels) {
+                    if (p >= level.level && !level.warned) {
+                        level.warned = true;
+                        Toaster.toast(level.title ?? qsTr("Battery charging"), level.message ?? qsTr("Battery level is high"), level.icon ?? "battery_android_full", level.critical ? Toast.Error : Toast.Warning);
+                    }
+                }
+                return;
+            }
+
+            // Display battery warn levels
             for (const level of root.warnLevels) {
                 if (p <= level.level && !level.warned) {
                     level.warned = true;
