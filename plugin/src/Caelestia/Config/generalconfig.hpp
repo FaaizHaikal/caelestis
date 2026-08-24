@@ -108,6 +108,26 @@ public:
         : ConfigObject(parent) {}
 };
 
+class GeneralMail : public ConfigObject {
+    Q_OBJECT
+    QML_ANONYMOUS
+
+    // Core OAuth & Server Configuration
+    CONFIG_GLOBAL_PROPERTY(bool, enabled, false)
+    CONFIG_GLOBAL_PROPERTY(QString, email, u""_s)
+    CONFIG_GLOBAL_PROPERTY(QString, clientId, u""_s)
+    CONFIG_GLOBAL_PROPERTY(QString, clientSecret, u""_s)
+    CONFIG_GLOBAL_PROPERTY(QString, imapHost, u"imap.gmail.com"_s)
+    CONFIG_GLOBAL_PROPERTY(int, imapPort, 993)
+
+    // Notification Appearance Defaults
+    CONFIG_GLOBAL_PROPERTY(QString, notifIcon, u"root:/assets/mail.svg"_s)
+
+public:
+    explicit GeneralMail(QObject* parent = nullptr)
+        : ConfigObject(parent) {}
+};
+
 class GeneralConfig : public ConfigObject {
     Q_OBJECT
     QML_ANONYMOUS
@@ -119,13 +139,15 @@ class GeneralConfig : public ConfigObject {
     CONFIG_SUBOBJECT(GeneralApps, apps)
     CONFIG_SUBOBJECT(GeneralIdle, idle)
     CONFIG_SUBOBJECT(GeneralBattery, battery)
+    CONFIG_SUBOBJECT(GeneralMail, mail)
 
 public:
     explicit GeneralConfig(QObject* parent = nullptr)
         : ConfigObject(parent)
         , m_apps(new GeneralApps(this))
         , m_idle(new GeneralIdle(this))
-        , m_battery(new GeneralBattery(this)) {}
+        , m_battery(new GeneralBattery(this))
+        , m_mail(new GeneralMail(this)) {}
 };
 
 } // namespace caelestia::config
